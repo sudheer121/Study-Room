@@ -11,7 +11,7 @@ const Join = ()=> {
     return (
         <div className = "joinOuterContainer">
             <div className = "joinInnerContainer"> 
-                <h1 className = "chatHeading"> Senior Mentor Chat </h1> 
+                <h1 className = "chatHeading"> Study Room </h1> 
             <div><input placeholder="Name" className="joinInput" type="text" onChange={(event) => { setName(event.target.value) }} /></div> 
             <div><input placeholder="Room" className="joinInput mt-20" type="text" onChange={(event) => { setRoom(event.target.value) }} /></div> 
             <Link onClick={ e => (!room || !name) && e.preventDefault()  } to={`/chat?name=${name}&room=${room}`}>

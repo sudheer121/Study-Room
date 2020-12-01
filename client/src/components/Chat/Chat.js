@@ -7,16 +7,18 @@ import Input from "../Input/Input";
 import Messages from "../Messages/Messages";
 
 // Right side components
-import InfoBarRight from "../InfobarRight/InfoBarRight"
-let socket; 
+import InfoBarRight from "../rightSideComponents/InfobarRight/InfoBarRight"
+import People from "../rightSideComponents/People/People"; 
+import Voice from "../rightSideComponents/Voice/Voice"
 
+let socket; 
 const Chat = ({ location })=> { 
 
     const [ name, setName ] = useState('');
     const [ room, setRoom ] = useState(''); 
-    const [ message, setMessage ] = useState('');   // for sending message 
+    const [ messageToSend, setMessage ] = useState('');   // for sending message 
     const [ messages, setMessages ] = useState([]); // for received message 
-    const [ usersOnline, setUsersOnline ] = useState('');
+    const [ usersOnline, setUsersOnline ] = useState([]);
 
     const ENDPOINT = 'localhost:5000'; //server 
 
@@ -38,15 +40,26 @@ const Chat = ({ location })=> {
         }
     },[ENDPOINT,location.search]);  
 
+    
     useEffect(()=>{
-        socket.on('message',(message)=>{
-            console.log(message); 
-            setMessages([...messages,message]); 
-            //console.log("Socket code ran"); 
+        socket.on('message',(messageReceived)=>{
+            console.log(messageReceived); 
+            setMessages((messages)=>[...messages,messageReceived]); 
+            console.log("Socket code ran"); 
         });
-        //console.log("use effect ran"); 
-    },[message]); // for received message 
 
+        socket.on('users-online',({users})=>{
+                setUsersOnline((usersOnline) => users); 
+                console.log((usersOnline)=> users); 
+        }); 
+        console.log("use effect ran"); 
+    },[]); // for received message 
+    
+
+
+    //useEffect(()=>{
+    //    socket.on('')
+    //}); 
     // socket.on('usersOnline',(users)=>{
     //     setUsersOnline(users); 
     //     console.log(usersOnline); 
@@ -55,8 +68,8 @@ const Chat = ({ location })=> {
     //need function for sending messages 
     const sendMessage = (event) => { 
         event.preventDefault(); // prevents from refreshing browser, form submit reloads the page  
-        if(message) {
-            socket.emit('user-message',message,()=>setMessage('')); 
+        if(messageToSend) {
+            socket.emit('user-message',messageToSend,()=>setMessage('')); 
         }
     }
       
@@ -65,11 +78,13 @@ const Chat = ({ location })=> {
             <div className="container">
                 <InfoBar room={room}/> 
                 <Messages messages={messages} name={name}/>
-                <Input setMessage={setMessage} sendMessage={sendMessage} message={message} /> 
+                <Input setMessage={setMessage} sendMessage={sendMessage} messageToSend={messageToSend} /> 
             </div>
-            {/* <div className="container-right">
+            <div className="container-right">
                 <InfoBarRight/> 
-            </div> */}
+                <People usersOnline={usersOnline} /> 
+                <Voice /> 
+            </div>
         </div>
     ); 
 }
