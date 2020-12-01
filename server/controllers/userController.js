@@ -33,7 +33,15 @@ const getUsersInRoom = (room) => {
         return user.room === room; 
     }
     
-    return users.filter(getUsers); 
+    const filteredArray =  users.filter(getUsers); 
+    if(!filteredArray.length) {
+        console.log("herer"); 
+        return []; 
+    }
+    //const arr = filteredObjects.map((user) => user.name); 
+    var list = filteredArray.map((obj) => obj.name); 
+    console.log(typeof list[0]); 
+    return list; 
 } 
 
 module.exports = { addUser, removeUser, getUser, getUsersInRoom };

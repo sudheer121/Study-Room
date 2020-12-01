@@ -16,7 +16,8 @@ io.on('connection', socket => {
         socket.join(user.room) //joins a user in a room 
         socket.emit('message',{user:'admin', text:`Welcome ${user.name} in room ${user.room}.`}); //send to user
         socket.broadcast.to(user.room).emit('message',{user:'admin', text:`${user.name} has joined the room`}); //sends message to all users in room except this user
-        io.to(user.room).emit('usersOnline', { room: user.room, users: getUsersInRoom(user.room) });
+        io.to(user.room).emit('users-online', { room: user.room, users: getUsersInRoom(user.room) });
+        console.log(getUsersInRoom(user.room)); 
         callBack(); // passing no errors to frontend for now 
     }); 
 
@@ -31,7 +32,7 @@ io.on('connection', socket => {
         const user = removeUser(socket.id);
         if(user) { 
             io.to(user.room).emit('message',{user:'admin', text:`${user.name} left the chat` }); //send this message to the room 
-            io.to(user.room).emit('usersOnline', { room: user.room, users: getUsersInRoom(user.room) });
+            io.to(user.room).emit('users-online', { room: user.room, users: getUsersInRoom(user.room) });
         }
         //console.log("User left"); 
     });
