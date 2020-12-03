@@ -1,12 +1,22 @@
 const express = require("express");   
 const socketio = require("socket.io"); 
 const http = require("http");
+const { ExpressPeerServer } = require('peer');
 
 const app = express(); 
 const server = http.createServer(app);
 const io = socketio(server); 
+const peerServer = ExpressPeerServer(server, {
+    debug: true,
+    path: '/'
+});
+app.use('/peerjs', peerServer);
 
-const { addUser,removeUser,getUser,getUsersInRoom } = require("./controllers/userController"); 
+const { 
+    addUser,removeUser,getUser,getUsersInRoom,
+    getUsersInVoice, addUserInVoice, removeUserInVoice 
+} = require("./controllers/userController"); 
+
 io.on('connection', socket => { 
 
     socket.on('join',({name,room},callBack)=>{ 
@@ -15,16 +25,29 @@ io.on('connection', socket => {
         if(user.error) return callBack(user.error); 
         socket.join(user.room) //joins a user in a room 
         socket.emit('message',{user:'admin', text:`Welcome ${user.name} in room ${user.room}.`}); //send to user
+        socket.emit('usersinvoice-before-join',{users:getUsersInVoice(user.room)});
         socket.broadcast.to(user.room).emit('message',{user:'admin', text:`${user.name} has joined the room`}); //sends message to all users in room except this user
         io.to(user.room).emit('users-online', { room: user.room, users: getUsersInRoom(user.room) });
-        console.log(getUsersInRoom(user.room)); 
+        //console.log(getUsersInRoom(user.room)); 
         callBack(); // passing no errors to frontend for now 
     }); 
 
+    
     socket.on('user-message',(message,callBack)=>{ //receive an message with eventName user-message 
         const user = getUser(socket.id); 
         io.to(user.room).emit('message',{user:user.name, text:message }); //send this message to the room 
         
+        callBack(); 
+    }); 
+
+    socket.on('join-voice',({name,room},callBack)=>{
+        io.to(room).emit('add-in-voice',{id:socket.id,name:name}); 
+        addUserInVoice({id:socket.id,name,room}); 
+        callBack(); 
+    }); 
+    socket.on('leave-voice',({name,room},callBack)=>{
+        io.to(room).emit('remove-from-voice',{id:socket.id,name:name}); 
+        removeUserInVoice(socket.id); 
         callBack(); 
     }); 
 
@@ -33,6 +56,8 @@ io.on('connection', socket => {
         if(user) { 
             io.to(user.room).emit('message',{user:'admin', text:`${user.name} left the chat` }); //send this message to the room 
             io.to(user.room).emit('users-online', { room: user.room, users: getUsersInRoom(user.room) });
+            removeUserInVoice(user.id); 
+            socket.broadcast.to(user.room).emit('remove-from-voice',{id:socket.id,name:user.name}); 
         }
         //console.log("User left"); 
     });
@@ -48,3 +73,8 @@ server.listen(PORT, ()=>{
     console.log(`Server started on port ${PORT}`); 
 })
 
+/*
+In the frontend, the users in voice list loads only once and after that individual information of 
+users joining and leaving is sent 
+
+*/

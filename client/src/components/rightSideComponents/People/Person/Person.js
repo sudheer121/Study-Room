@@ -5,7 +5,7 @@ const Person = ( {person} )=> {
     return (
         <div className = "namecontainer">
             <div className="person">
-            {person}
+            {person.name}
             </div>
         </div>
     ); 

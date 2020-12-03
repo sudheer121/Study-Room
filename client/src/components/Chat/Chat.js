@@ -11,7 +11,7 @@ import InfoBarRight from "../rightSideComponents/InfobarRight/InfoBarRight"
 import People from "../rightSideComponents/People/People"; 
 import Voice from "../rightSideComponents/Voice/Voice"
 
-let socket; 
+let socket = null; 
 const Chat = ({ location })=> { 
 
     const [ name, setName ] = useState('');
@@ -20,20 +20,24 @@ const Chat = ({ location })=> {
     const [ messages, setMessages ] = useState([]); // for received message 
     const [ usersOnline, setUsersOnline ] = useState([]);
 
+    const [ join,setJoin ] = useState(0); 
+    const [ usersInVoice, setUsersInVoice ] = useState([]); 
+
     const ENDPOINT = 'localhost:5000'; //server 
 
     useEffect(() => {
         const { name, room } = queryString.parse(location.search); 
 
         socket = io(ENDPOINT);
-
+       
         setName(name);
         setRoom(room); 
 
         socket.emit('join',{name,room},()=>{
+            console.log(socket.id); 
             //this function is called if server wants to reply with a message(eg:error) on this join event 
         }); //{name,room} es6 is actually {name:name, room:room} 
-
+        
         return () => { //component unmounting 
             socket.emit('disconnect');
             socket.off(); 
@@ -43,27 +47,34 @@ const Chat = ({ location })=> {
     
     useEffect(()=>{
         socket.on('message',(messageReceived)=>{
-            console.log(messageReceived); 
             setMessages((messages)=>[...messages,messageReceived]); 
-            console.log("Socket code ran"); 
         });
+
+        socket.on('usersinvoice-before-join',({users})=>{
+            console.log(users); 
+            setUsersInVoice((usersInVoice) => users); 
+        }); // list of users in voice channel just  before joining       
 
         socket.on('users-online',({users})=>{
                 setUsersOnline((usersOnline) => users); 
-                console.log((usersOnline)=> users); 
+                //console.log((usersOnline)=> users); 
         }); 
+        
+        socket.on('add-in-voice',(user)=>{
+            console.log(user); 
+            setUsersInVoice( usersInVoice =>[...usersInVoice,user]); 
+            console.log(usersInVoice); 
+        });
+        socket.on('remove-from-voice',(user)=>{
+            console.log(user); 
+            setUsersInVoice( usersInVoice =>usersInVoice.filter((x) => x.id !== user.id )); 
+            console.log({usersInVoice});  
+        });
         console.log("use effect ran"); 
     },[]); // for received message 
+
     
-
-
-    //useEffect(()=>{
-    //    socket.on('')
-    //}); 
-    // socket.on('usersOnline',(users)=>{
-    //     setUsersOnline(users); 
-    //     console.log(usersOnline); 
-    // }); 
+    
 
     //need function for sending messages 
     const sendMessage = (event) => { 
@@ -72,7 +83,16 @@ const Chat = ({ location })=> {
             socket.emit('user-message',messageToSend,()=>setMessage('')); 
         }
     }
-      
+    
+    const joinVoice = ()=> {
+        socket.emit('join-voice',{name,room},() => {});
+        console.log('voice joined'); 
+    }
+    const leaveVoice = ()=>{
+        socket.emit('leave-voice',{name,room},() => {});
+        console.log('voice left')
+    }
+
     return (
         <div className="outerContainer">
             <div className="container">
@@ -83,7 +103,9 @@ const Chat = ({ location })=> {
             <div className="container-right">
                 <InfoBarRight/> 
                 <People usersOnline={usersOnline} /> 
-                <Voice /> 
+                <div style = {{height:"3px",backgroundColor:"black"}}> </div> 
+                <People usersOnline={usersInVoice} /> 
+                <Voice usersInVoice={usersInVoice} joinVoice={joinVoice} leaveVoice={leaveVoice} join={join} setJoin={setJoin}/> 
             </div>
         </div>
     ); 
