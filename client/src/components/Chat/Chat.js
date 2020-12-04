@@ -15,38 +15,21 @@ import ReactPlayer from 'react-player'
 import Peer from "peerjs"; 
 
 const getAudio = () =>{
-    return navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+     return navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+}
+let streamsArr = []; 
+
+//https://github.com/WebDevSimplified/Zoom-Clone-With-WebRTC/blob/master/public/script.js
+
+function stopBothVideoAndAudio(stream) {
+    stream.getTracks().forEach(function(track) {
+        if (track.readyState == 'live') {
+            track.stop();
+        }
+    });
 }
 
-const onReceiveAudioStream = (stream) =>{ 
-    console.log("receiving an audio stream"); 
-    console.log(stream);
-    <ReactPlayer url='https://www.youtube.com/watch?v=ysz5S6PUM-U' />
-}
-
-const onReceiveCall = (call) => {
-    getAudio()
-    .then((stream)=>{
-        call.answer(stream); 
-    })
-    .catch((error)=>{
-        console.log("Coudn't get audio while receiving a call"); 
-    })
-    call.on('stream', onReceiveAudioStream);
-}   
-const callSomeone = (id)=>{
-    getAudio()
-    .then((stream)=>{
-        var call = peer.call(id, stream);
-        call.on('stream', onReceiveAudioStream);
-        return call; 
-    })
-    .catch((error)=>{
-        console.log("Coudn't get audio while calling someone"); 
-    })
-}; 
-
-let socket = null, peer = null, connections = []; 
+let socket = null, peer = null, peers = [], myStream = null, receivedCalls = [];  
 const Chat = ({ location })=> { 
 
     const [ name, setName ] = useState('');
@@ -57,9 +40,8 @@ const Chat = ({ location })=> {
 
     const [ join,setJoin ] = useState(0); 
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
-    const [activeAudioStreams, setActiveAudioStreams] = useState([]); 
-
-    const ENDPOINT = 'localhost:5000'; //server 
+    
+    const ENDPOINT = 'http://192.168.1.205:5000'; //server 
 
     useEffect(() => {
         const { name, room } = queryString.parse(location.search); 
@@ -72,7 +54,7 @@ const Chat = ({ location })=> {
         socket.emit('join',{name,room},()=>{
             console.log(socket.id); 
             //this function is called if server wants to reply with a message(eg:error) on this join event 
-        }); //{name,room} es6 is actually {name:name, room:room} 
+        });
         
         return () => { //component unmounting 
             socket.emit('disconnect');
@@ -85,69 +67,97 @@ const Chat = ({ location })=> {
         socket.on('message',(messageReceived)=>{
             setMessages((messages)=>[...messages,messageReceived]); 
         });
-
         socket.on('usersinvoice-before-join',({users})=>{
             console.log(users); 
             setUsersInVoice((usersInVoice) => users); 
-        }); // list of users in voice channel just  before joining       
-
+        });       
         socket.on('users-online',({users})=>{
                 setUsersOnline((usersOnline) => users); 
-                //console.log((usersOnline)=> users); 
         }); 
-
         socket.on('add-in-voice',(user)=>{
-            console.log(user); 
             setUsersInVoice( usersInVoice =>[...usersInVoice,user]); 
         });
         socket.on('remove-from-voice',(user)=>{
-            console.log(user); 
             setUsersInVoice( usersInVoice =>usersInVoice.filter((x) => x.id !== user.id )); 
-            console.log({usersInVoice});  
         });
-        console.log("use effect ran"); 
     },[]); // for received message 
 
+    const onReceiveAudioStream = (stream) =>{ 
+        const audio = document.createElement('audio');
+        audio.srcObject = stream
+        audio.addEventListener('loadedmetadata', () => {
+            audio.play()
+        })
+        console.log("receiving an audio stream"); 
+        //console.log("Received" + stream);
+    }
+  
     useEffect(()=>{
+        
         if(join) {
-            peer = new Peer(socket.id,{
-                host:'/',
-                port: 5000,
-                path: '/peerjs'
-            }); //connect this peer to server
-            
-            //listen
-            peer.on('connection', (conn) => {
-                conn.on('data', (data) => {
-                    console.log('Incoming data', data);
-                    conn.send('REPLY');
-                })
-            })
-            peer.on('call', onReceiveCall);
+            getAudio()
+            .then((mystream)=>{
+                myStream = mystream; 
+                 //connect this peer to server
+                peer = new Peer(socket.id,{
+                    host:'/',
+                    port: 5000,
+                    path: '/peerjs'
+                }); 
 
-            connections = (usersInVoice).forEach((u) => {
-                // console.log(u.id, socket.id); 
-                // if(u.id === socket.id) return ;
-                // //console.log(u.name);  
-                // let conn = peer.connect(u.id);
-                // conn.on('data', function(data) {
-                //     console.log(data); 
-                // })
-                // conn.on('open', () => {
-                //     console.log("opened"); 
-                //     conn.send('hi! from ' + name)
-                // });
-                var call = callSomeone(u.id); 
-                return call; 
-            }); //call each in voice channel 
+                //listen 
+                peer.on('call', (call)=>{
+                    call.answer(mystream); 
+                    call.on('stream', (stream)=>{
+                        onReceiveAudioStream(stream); 
+                        receivedCalls.push(stream); 
+                    });
+                    
+                });
+
+                peers = (usersInVoice).map((u) => {  // usersInVoice affects this 
+                    
+                    //call everyone already present 
+                    var mediaConnection = peer.call(u.id, mystream); 
+                    
+                    const audio = document.createElement('audio');
+                    mediaConnection.on('stream', (stream)=>{
+                        audio.srcObject = stream
+                        audio.addEventListener('loadedmetadata', () => {
+                            audio.play()
+                        })
+                    });
+                    // if anyone closes meadia connection 
+                    mediaConnection.on('close',()=>{
+                        audio.remove();
+                    })
+                    console.log(mediaConnection); 
+                    //peers[u.id] = mediaConnection; 
+                    return mediaConnection; 
+                }); 
+            })
+            .catch((error)=>{
+                console.log("Error while getting audio",error); 
+            })
+
+            //call everyone already there 
+            
         } else {
+            //close my audio 
+            if(myStream) stopBothVideoAndAudio(myStream); 
+            //close the calls i received
+            receivedCalls.forEach((stream) => stopBothVideoAndAudio(stream));
             if(peer) { 
                 peer.disconnect();
+                myStream = null; 
                 console.log("disconnected"); 
-                if(connections) { 
-                    connections.forEach((call)=>{
-                        call.close(); 
+
+                //close the connections I called 
+                if(peers) { 
+                    peers.forEach((x)=>{
+                        x.close();  
                     })
+                    peers = []; 
                 }
             }
         }
@@ -185,6 +195,7 @@ const Chat = ({ location })=> {
                 <People usersOnline={usersInVoice} /> 
                 <Voice usersInVoice={usersInVoice} joinVoice={joinVoice} leaveVoice={leaveVoice} join={join} setJoin={setJoin}/> 
             </div>
+             
         </div>
     ); 
 }
