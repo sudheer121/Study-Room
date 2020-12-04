@@ -6,12 +6,12 @@ const Voice = ( { usersInVoice, joinVoice, leaveVoice, join, setJoin} ) => {
 
   
   const btnClick = () => {
-      
       if(join) { 
         leaveVoice(); 
+        
         setJoin(0); 
       } else {
-        joinVoice();
+        joinVoice(); 
         setJoin(1); 
       }
   }

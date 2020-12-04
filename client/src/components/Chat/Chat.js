@@ -10,8 +10,43 @@ import Messages from "../Messages/Messages";
 import InfoBarRight from "../rightSideComponents/InfobarRight/InfoBarRight"
 import People from "../rightSideComponents/People/People"; 
 import Voice from "../rightSideComponents/Voice/Voice"
+import ReactPlayer from 'react-player'
 
-let socket = null; 
+import Peer from "peerjs"; 
+
+const getAudio = () =>{
+    return navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+}
+
+const onReceiveAudioStream = (stream) =>{ 
+    console.log("receiving an audio stream"); 
+    console.log(stream);
+    <ReactPlayer url='https://www.youtube.com/watch?v=ysz5S6PUM-U' />
+}
+
+const onReceiveCall = (call) => {
+    getAudio()
+    .then((stream)=>{
+        call.answer(stream); 
+    })
+    .catch((error)=>{
+        console.log("Coudn't get audio while receiving a call"); 
+    })
+    call.on('stream', onReceiveAudioStream);
+}   
+const callSomeone = (id)=>{
+    getAudio()
+    .then((stream)=>{
+        var call = peer.call(id, stream);
+        call.on('stream', onReceiveAudioStream);
+        return call; 
+    })
+    .catch((error)=>{
+        console.log("Coudn't get audio while calling someone"); 
+    })
+}; 
+
+let socket = null, peer = null, connections = []; 
 const Chat = ({ location })=> { 
 
     const [ name, setName ] = useState('');
@@ -22,6 +57,7 @@ const Chat = ({ location })=> {
 
     const [ join,setJoin ] = useState(0); 
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
+    const [activeAudioStreams, setActiveAudioStreams] = useState([]); 
 
     const ENDPOINT = 'localhost:5000'; //server 
 
@@ -59,11 +95,10 @@ const Chat = ({ location })=> {
                 setUsersOnline((usersOnline) => users); 
                 //console.log((usersOnline)=> users); 
         }); 
-        
+
         socket.on('add-in-voice',(user)=>{
             console.log(user); 
             setUsersInVoice( usersInVoice =>[...usersInVoice,user]); 
-            console.log(usersInVoice); 
         });
         socket.on('remove-from-voice',(user)=>{
             console.log(user); 
@@ -73,7 +108,50 @@ const Chat = ({ location })=> {
         console.log("use effect ran"); 
     },[]); // for received message 
 
-    
+    useEffect(()=>{
+        if(join) {
+            peer = new Peer(socket.id,{
+                host:'/',
+                port: 5000,
+                path: '/peerjs'
+            }); //connect this peer to server
+            
+            //listen
+            peer.on('connection', (conn) => {
+                conn.on('data', (data) => {
+                    console.log('Incoming data', data);
+                    conn.send('REPLY');
+                })
+            })
+            peer.on('call', onReceiveCall);
+
+            connections = (usersInVoice).forEach((u) => {
+                // console.log(u.id, socket.id); 
+                // if(u.id === socket.id) return ;
+                // //console.log(u.name);  
+                // let conn = peer.connect(u.id);
+                // conn.on('data', function(data) {
+                //     console.log(data); 
+                // })
+                // conn.on('open', () => {
+                //     console.log("opened"); 
+                //     conn.send('hi! from ' + name)
+                // });
+                var call = callSomeone(u.id); 
+                return call; 
+            }); //call each in voice channel 
+        } else {
+            if(peer) { 
+                peer.disconnect();
+                console.log("disconnected"); 
+                if(connections) { 
+                    connections.forEach((call)=>{
+                        call.close(); 
+                    })
+                }
+            }
+        }
+    },[join]); 
     
 
     //need function for sending messages 
