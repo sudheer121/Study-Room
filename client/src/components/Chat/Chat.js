@@ -42,7 +42,8 @@ const Chat = ({ location })=> {
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
     
     //node server endpoint 
-    const ENDPOINT = process.env.NODE_ENV === 'production' ? process.env.process.env.REACT_APP_NODE_SERVER : process.env.REACT_APP_NODE_SERVER_LOCAL; //server 
+    const ENDPOINT = '';
+    //process.env.NODE_ENV === 'production' ? process.env.process.env.REACT_APP_NODE_SERVER : process.env.REACT_APP_NODE_SERVER_LOCAL; //server 
 
     useEffect(() => {
         const { name, room } = queryString.parse(location.search); 
