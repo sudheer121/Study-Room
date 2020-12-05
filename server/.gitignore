@@ -1,2 +1,9 @@
 node_modules
 .env
+.rnd
+cert.pem
+debug.log
+key.pem
+keytmp.pem
+cert.pem
+httpssettings.txt

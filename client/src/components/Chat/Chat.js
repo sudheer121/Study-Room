@@ -41,7 +41,8 @@ const Chat = ({ location })=> {
     const [ join,setJoin ] = useState(0); 
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
     
-    const ENDPOINT = 'http://192.168.1.205:5000'; //server 
+    //node server endpoint 
+    const ENDPOINT = process.env.NODE_ENV === 'production' ? process.env.process.env.REACT_APP_NODE_SERVER : process.env.REACT_APP_NODE_SERVER_LOCAL; //server 
 
     useEffect(() => {
         const { name, room } = queryString.parse(location.search); 
@@ -98,7 +99,11 @@ const Chat = ({ location })=> {
             getAudio()
             .then((mystream)=>{
                 myStream = mystream; 
-                 //connect this peer to server
+                //connect this peer to server
+                // peer = new Peer(socket.id,{
+                // port: 443,
+                // host: "https://0.peerjs.com"
+                // })
                 peer = new Peer(socket.id,{
                     host:'/',
                     port: 5000,

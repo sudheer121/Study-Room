@@ -13,6 +13,7 @@
 
 # misc
 .env
+.env.example
 .DS_Store
 .env.local
 .env.development.local
@@ -22,3 +23,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.rnd
+cert.pem
+debug.log
+key.pem
+keytmp.pem
+cert.pem
