@@ -3,9 +3,12 @@ const socketio = require("socket.io");
 const http = require("http");
 const { ExpressPeerServer } = require('peer');
 
+var cors = require('cors');
 const app = express(); 
 const server = http.createServer(app);
 const io = socketio(server); 
+
+app.use(cors());
 const peerServer = ExpressPeerServer(server, {
     debug: true,
     path: '/'
@@ -68,6 +71,7 @@ io.on('connection', socket => {
 
 const router = require("./controllers/chatController");
 app.use(router); 
+
 
 const PORT = process.env.PORT || 5000; 
 server.listen(PORT, ()=>{

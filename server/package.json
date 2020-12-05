@@ -4,15 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
-    "https": "^1.0.0",
-    "https-localhost": "^4.6.4",
     "nodemon": "^2.0.6",
     "peer": "^0.6.1",
     "socket.io": "^2.3.0"

@@ -1,4 +1,4 @@
-node_modules
+/node_modules
 .env
 .rnd
 cert.pem
