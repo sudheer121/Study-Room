@@ -37,8 +37,9 @@ const Chat = ({ location })=> {
     const [ join,setJoin ] = useState(0); 
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
     
-    const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_LOCAL;
-    
+    const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_LOCAL;   // the express server 
+    // const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_REAL; // my deployed server 
+ 
     useEffect(() => {
         const { name, room } = queryString.parse(location.search); 
         socket = io(ENDPOINT, { transport : ['websocket'] });
