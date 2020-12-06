@@ -1,5 +1,6 @@
 .people {
     padding: 5% 0;
-    overflow: auto;
-    flex: auto;
+    /* overflow: hidden;
+    flex: auto; */
+    border-radius: 4px;
 }

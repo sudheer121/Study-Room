@@ -10,20 +10,16 @@ import Messages from "../Messages/Messages";
 import InfoBarRight from "../rightSideComponents/InfobarRight/InfoBarRight"
 import People from "../rightSideComponents/People/People"; 
 import Voice from "../rightSideComponents/Voice/Voice"
-import ReactPlayer from 'react-player'
 
 import Peer from "peerjs"; 
 
 const getAudio = () =>{
      return navigator.mediaDevices.getUserMedia({ audio: true, video: false })
 }
-let streamsArr = []; 
-
-//https://github.com/WebDevSimplified/Zoom-Clone-With-WebRTC/blob/master/public/script.js
 
 function stopBothVideoAndAudio(stream) {
     stream.getTracks().forEach(function(track) {
-        if (track.readyState == 'live') {
+        if (track.readyState === 'live') {
             track.stop();
         }
     });
@@ -41,14 +37,11 @@ const Chat = ({ location })=> {
     const [ join,setJoin ] = useState(0); 
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
     
-    //node server endpoint 
-    const ENDPOINT = '';
-    //process.env.NODE_ENV === 'production' ? process.env.process.env.REACT_APP_NODE_SERVER : process.env.REACT_APP_NODE_SERVER_LOCAL; //server 
-
+    const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_LOCAL;
+    
     useEffect(() => {
         const { name, room } = queryString.parse(location.search); 
-
-        socket = io(ENDPOINT);
+        socket = io(ENDPOINT, { transport : ['websocket'] });
        
         setName(name);
         setRoom(room); 
@@ -59,10 +52,11 @@ const Chat = ({ location })=> {
         });
         
         return () => { //component unmounting 
+            socket.emit('leave-voice',{name,room},() => {});
             socket.emit('disconnect');
             socket.off(); 
         }
-    },[ENDPOINT,location.search]);  
+    },[]); //[ENDPOINT,location.search]);  
 
     
     useEffect(()=>{
@@ -85,13 +79,12 @@ const Chat = ({ location })=> {
     },[]); // for received message 
 
     const onReceiveAudioStream = (stream) =>{ 
+        console.log("receiving an audio stream"); 
         const audio = document.createElement('audio');
         audio.srcObject = stream
         audio.addEventListener('loadedmetadata', () => {
             audio.play()
         })
-        console.log("receiving an audio stream"); 
-        //console.log("Received" + stream);
     }
   
     useEffect(()=>{
@@ -100,59 +93,54 @@ const Chat = ({ location })=> {
             getAudio()
             .then((mystream)=>{
                 myStream = mystream; 
-                //connect this peer to server
-                // peer = new Peer(socket.id,{
-                // port: 443,
-                // host: "https://0.peerjs.com"
-                // })
-                peer = new Peer(socket.id,{
-                    host:'/',
-                    port: 5000,
-                    path: '/peerjs'
-                }); 
-
+                peer = new Peer(socket.id); 
+                //console.log(peer);
+                
                 //listen 
                 peer.on('call', (call)=>{
+                    console.log("call receiving")
                     call.answer(mystream); 
                     call.on('stream', (stream)=>{
                         onReceiveAudioStream(stream); 
                         receivedCalls.push(stream); 
                     });
-                    
                 });
-
-                peers = (usersInVoice).map((u) => {  // usersInVoice affects this 
-                    
-                    //call everyone already present 
-                    var mediaConnection = peer.call(u.id, mystream); 
-                    
-                    const audio = document.createElement('audio');
-                    mediaConnection.on('stream', (stream)=>{
-                        audio.srcObject = stream
-                        audio.addEventListener('loadedmetadata', () => {
-                            audio.play()
+                //console.log(usersInVoice); 
+                peer.on('open',()=>{
+                    console.log("connected to peerserver"); 
+                    peers = (usersInVoice).map((u) => {  // usersInVoice affects this 
+                        //call everyone already present 
+                        var mediaConnection = peer.call(u.id, mystream); 
+                        console.log(`Calling ${u.id}`);
+                        //console.log(mediaConnection); 
+    
+                        const audio = document.createElement('audio');
+                        mediaConnection.on('stream', (stream)=>{
+                            audio.srcObject = stream
+                            audio.addEventListener('loadedmetadata', () => {
+                                audio.play()
+                            })
+                        });
+                        // if anyone closes meadia connection 
+                        mediaConnection.on('close',()=>{
+                            audio.remove();
                         })
-                    });
-                    // if anyone closes meadia connection 
-                    mediaConnection.on('close',()=>{
-                        audio.remove();
-                    })
-                    console.log(mediaConnection); 
-                    //peers[u.id] = mediaConnection; 
-                    return mediaConnection; 
-                }); 
+                        return mediaConnection; 
+                    }); 
+                }) 
+                
             })
             .catch((error)=>{
                 console.log("Error while getting audio",error); 
             })
-
-            //call everyone already there 
-            
         } else {
+            
             //close my audio 
             if(myStream) stopBothVideoAndAudio(myStream); 
             //close the calls i received
             receivedCalls.forEach((stream) => stopBothVideoAndAudio(stream));
+            
+            
             if(peer) { 
                 peer.disconnect();
                 myStream = null; 
@@ -195,13 +183,17 @@ const Chat = ({ location })=> {
                 <Input setMessage={setMessage} sendMessage={sendMessage} messageToSend={messageToSend} /> 
             </div>
             <div className="container-right">
-                <InfoBarRight/> 
-                <People usersOnline={usersOnline} /> 
-                <div style = {{height:"3px",backgroundColor:"black"}}> </div> 
-                <People usersOnline={usersInVoice} /> 
-                <Voice usersInVoice={usersInVoice} joinVoice={joinVoice} leaveVoice={leaveVoice} join={join} setJoin={setJoin}/> 
+                <div className="container-up">
+                    <InfoBarRight/> 
+                    <People usersOnline={usersOnline} /> 
+                </div>
+                <div className="container-down">  
+                    <People usersOnline={usersInVoice} /> 
+                    <Voice usersInVoice={usersInVoice} joinVoice={joinVoice} leaveVoice={leaveVoice} join={join} setJoin={setJoin}/> 
+                </div>
             </div>
-             
+            
+            
         </div>
     ); 
 }

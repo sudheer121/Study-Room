@@ -20,7 +20,6 @@ const removeUser = (id) => {
 
     const index = users.findIndex((user) => user.id === id);
     if(index !== -1) return users.splice(index, 1)[0];
-
 }
 
 // const getUser = (id) => users.find((user) => user.id === id);
@@ -54,7 +53,9 @@ const addUserInVoice = ({id,name,room})=> {
     return user; 
 }
 const removeUserInVoice = (id)=> {
-    return usersInVoice.filter((x) => x.id !== id);  
+    const index = usersInVoice.findIndex((user) => user.id === id);
+    if(index !== -1) usersInVoice.splice(index, 1);
+    return usersInVoice; 
 }
 const getUsersInVoice = (room)=>{
     return usersInVoice.filter((x) => x.room === room ); 
