@@ -16,7 +16,8 @@ const Voice = ( { joinVoice, leaveVoice, join, setJoin} ) => {
   return (
     <div className="voicebox">
       <button className="voicebutton" onClick = { btnClick }> 
-        {  join ? <p>Leave Voice</p> : <p>Join voice </p> } 
+        {  join ? 
+        <p>Leave Voice <i class="fas fa-2x fa-microphone-slash"></i></p> : <p>Join Voice<i class="fas fa-2x fa-microphone voiceicon"></i></p> } 
       </button>
     </div>
   );

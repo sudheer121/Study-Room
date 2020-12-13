@@ -40,23 +40,46 @@
   width: 100%;
 }
 
+.inMobile { 
+  display: none; 
+  padding: 5px 10px; 
+  margin-top: 10px; 
+  width: 100vw; 
+  background-color: #303033;
+  color:grey
+}
+
+
 @media (min-width: 320px) and (max-width: 480px) {
   .outerContainer {
     height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    height: 150vh;
   }
 
   .container {
     width: 100%;
-    height: 100%;
+    height: 85vh;
   }
+  
+  .inMobile { 
+    display: flex;
+    
+  }
+
   .container-right{
+    /* display: none !important;  */
     width: 100%;
-    height: 100%;
+    margin-top:10px ;
   }
-  .container-up{
+  .container-up {
+    min-height: 30vw;
+  }
+  .container-down {
     margin-top:3px ;
+    min-height: 30vw;
   }
 }
 

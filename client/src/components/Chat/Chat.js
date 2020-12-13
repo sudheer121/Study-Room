@@ -37,8 +37,8 @@ const Chat = ({ location })=> {
     const [ join,setJoin ] = useState(0); 
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
     
-    const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_LOCAL;   // the express server 
-    // const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_REAL; // my deployed server 
+    //const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_LOCAL;   // the express server 
+     const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_REAL; // my deployed server 
  
     useEffect(() => {
         const { name, room } = queryString.parse(location.search); 
@@ -183,19 +183,22 @@ const Chat = ({ location })=> {
                 <Messages messages={messages} name={name}/>
                 <Input setMessage={setMessage} sendMessage={sendMessage} messageToSend={messageToSend} /> 
             </div>
+            <div className="inMobile">
+                    ...scoll down for more
+            </div>
             <div className="container-right">
                 <div className="container-up">
                     <InfoBarRight/> 
-                    <People usersOnline={usersOnline} /> 
+                    <People usersOnline={usersOnline} isVoice={false}/> 
                 </div>
                 <div className="container-down">  
-                    <People usersOnline={usersInVoice} /> 
+                    <People usersOnline={usersInVoice} isVoice={true}/> 
                     <Voice usersInVoice={usersInVoice} joinVoice={joinVoice} leaveVoice={leaveVoice} join={join} setJoin={setJoin}/> 
                 </div>
             </div>
             
-            
         </div>
+        
     ); 
 }
 
