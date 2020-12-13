@@ -25,10 +25,7 @@
   width: 35%;
 }
 .container-up {
-  /* display: flex;
-  flex-direction: column;
-  justify-content: space-between; */
-  background: #FFFFFF;
+  background-color: #303033;
   border-radius: 4px;
   height: 48%;
   width: 100%;
@@ -37,7 +34,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #FFFFFF;
+  background-color: #303033;
   border-radius: 4px;
   height: 48%;
   width: 100%;
@@ -46,11 +43,20 @@
 @media (min-width: 320px) and (max-width: 480px) {
   .outerContainer {
     height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   .container {
     width: 100%;
     height: 100%;
+  }
+  .container-right{
+    width: 100%;
+    height: 100%;
+  }
+  .container-up{
+    margin-top:3px ;
   }
 }
 

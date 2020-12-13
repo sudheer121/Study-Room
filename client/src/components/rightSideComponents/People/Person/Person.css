@@ -1,10 +1,13 @@
 .namecontainer {
     border-radius: 4px;
-    background-color:rgb(154, 155, 167); 
     padding: 2% 5%;
-    margin-left: 5px;
-    margin-bottom: 3px; 
+    margin-left: 2%;
+    margin-bottom: 2%; 
     display: inline-block !important;
+    max-width: 95%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color: white;
 }   
 .person {
    
