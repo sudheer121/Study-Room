@@ -12,6 +12,7 @@ import People from "../rightSideComponents/People/People";
 import Voice from "../rightSideComponents/Voice/Voice"
 
 import Peer from "peerjs"; 
+//import { cred } from "../../config/callcred"; 
 
 const getAudio = () =>{
      return navigator.mediaDevices.getUserMedia({ audio: true, video: false })
@@ -57,7 +58,7 @@ const Chat = ({ location })=> {
             socket.emit('disconnect');
             socket.off(); 
         }
-    },[]); //[ENDPOINT,location.search]);  
+    },[ENDPOINT,location.search]); //[ENDPOINT,location.search]);  
 
     
     useEffect(()=>{
@@ -94,8 +95,37 @@ const Chat = ({ location })=> {
             getAudio()
             .then((mystream)=>{
                 myStream = mystream; 
-                peer = new Peer(socket.id); 
-                //console.log(peer);
+                //peer = new Peer(socket.id);
+                const username = process.env.REACT_APP_TWILIO_USERNAME; 
+                const cred = {
+                    config : {
+                    'iceServers' : [
+                    {
+                        url: 'stun:global.stun.twilio.com:3478?transport=udp',
+                        urls: 'stun:global.stun.twilio.com:3478?transport=udp'
+                    },
+                    {
+                        url: 'turn:global.turn.twilio.com:3478?transport=udp',
+                        username,
+                        urls: 'turn:global.turn.twilio.com:3478?transport=udp',
+                        credential: process.env.REACT_APP_TWILIO_CREDENTIAL
+                    },
+                    {
+                        url: 'turn:global.turn.twilio.com:3478?transport=tcp',
+                        username,
+                        urls: 'turn:global.turn.twilio.com:3478?transport=tcp',
+                        credential: process.env.REACT_APP_TWILIO_CREDENTIAL
+                    },
+                    {
+                        url: 'turn:global.turn.twilio.com:443?transport=tcp',
+                        username,
+                        urls: 'turn:global.turn.twilio.com:443?transport=tcp',
+                        credential: process.env.REACT_APP_TWILIO_CREDENTIAL
+                    }
+                    ]} 
+                }
+                peer = new Peer(socket.id, cred);  
+                console.log(peer);
                 
                 //listen 
                 peer.on('call', (call)=>{
@@ -175,7 +205,8 @@ const Chat = ({ location })=> {
         socket.emit('leave-voice',{name,room},() => {});
         console.log('voice left')
     }
-
+    
+     
     return (
         <div className="outerContainer">
             <div className="container">
