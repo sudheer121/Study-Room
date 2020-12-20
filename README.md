@@ -29,8 +29,8 @@ Check it out at https://mystudyroom.netlify.app
 <h3> Technologies Used </h3>
 
 > <ul> 
-> <li> Frontend - Nodejs </li>
-> <li> Backend - Reactjs </li>
+> <li> Server - Nodejs </li>
+> <li> Client - Reactjs </li>
 > <li> Chat - WebSockets </li>
 > <li> Voice - WebRTC </li> 
 > </ul>
