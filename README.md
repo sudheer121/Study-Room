@@ -2,14 +2,9 @@
 A fully functional web application where students can join in room, and communicate in text and audio channels.  
 <div align="center"> 
   <div>
-     ![demonstration](desktop-view.gif =250*500) 
+    <img src="desktop-view.gif" width="500" height="250"/>
   </div> 
   <div> 
-    ![demonstration](mobile-view.gif =100*250) 
+    <img src="desktop-view.gif" width="120" height="250"/>
   </div> 
-</div>
-<div align="center"> 
-    Desktop View               | Mobile View
-    :-------------------------:|:-------------------------:
-    ![Desktop View](desktop-view.gif)  |  ![Mobile View](mobile-view.gif)
 </div>
