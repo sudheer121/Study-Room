@@ -1,7 +1,8 @@
 # Study-Room
 A fully functional web application where students can join in room, and communicate in text and audio channels.  
 
-<h3> Desktop and Mobile Views </h3>
+<h3> <u>Desktop and Mobile Views</u> </h3>
+
 <div align="center"> 
   <div>
     The application is compatible with both desktop and mobile phones. 
