@@ -112,7 +112,7 @@ const Chat = ({ location })=> {
         socket.emit('join',{name,room},(result)=>{
             console.log(`You are ${name} with id ${socket.id}`); 
             setCredObj(result); 
-            console.log(cred); 
+            //console.log(cred); 
         });
         
         return () => { //component unmounting 
