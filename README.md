@@ -1,5 +1,5 @@
 <h2> Study-Room (connect over text and voice channels) </h2>
-
+Study, collaborate, conference ... over click of a button. 
 A fully functional web application where students can join in room, and communicate in text and audio channels.The application connects peers using webSockets and webRTC. 
 Check it out at https://mystudyroom.netlify.app  
 
