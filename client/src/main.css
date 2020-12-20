@@ -1,0 +1,19 @@
+.bgprime { 
+    background-color: #1A1A1D; 
+}
+
+.bgsec {
+    background-color: #303033;
+}
+
+.bgtert { 
+    background-color: #47474A;
+}
+
+.bgbutton,.bghead { 
+    background-color: #7289dA;
+}
+
+.fontprime { 
+    font-family: 'Merriweather', serif;
+}

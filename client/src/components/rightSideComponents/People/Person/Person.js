@@ -6,7 +6,7 @@ const Person = ( {person, isVoice} )=> {
         <div className = "namecontainer backgroundMain">
             <div className="person">
             {person.name + "  "} 
-            { isVoice && <i class="fas fa-volume-up"></i> }
+            { isVoice && <i className="fas fa-volume-up"></i> }
             </div>
         </div>
     ); 

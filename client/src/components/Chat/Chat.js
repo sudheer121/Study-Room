@@ -25,8 +25,67 @@ function stopBothVideoAndAudio(stream) {
         }
     });
 }
+let cred = null; 
+
+// STUN/TURN servers for voice channel 
+const setCredObj = (twilioObj) => {
+    cred = {
+        config : {
+        'iceServers' : [
+        {
+            url: 'stun:global.stun.twilio.com:3478?transport=udp',
+            urls: 'stun:global.stun.twilio.com:3478?transport=udp'
+        },
+        {
+            url: 'turn:numb.viagenie.ca',
+            credential: 'muazkh',
+            username: 'webrtc@live.com'
+        },
+        {
+            url: 'turn:192.158.29.39:3478?transport=udp',
+            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+            username: '28224511:1379330808'
+        },
+        {
+            url: 'turn:192.158.29.39:3478?transport=tcp',
+            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+            username: '28224511:1379330808'
+        },
+        {
+            url: 'turn:turn.bistri.com:80',
+            credential: 'homeo',
+            username: 'homeo'
+        },
+        {
+            url: 'turn:turn.anyfirewall.com:443?transport=tcp',
+            credential: 'webrtc',
+            username: 'webrtc'
+        },  
+        //remove the below three objects if you are running locally without twilio 
+        {
+            url: 'turn:global.turn.twilio.com:3478?transport=udp',
+            username : twilioObj.username,
+            urls: 'turn:global.turn.twilio.com:3478?transport=udp',
+            credential: twilioObj.cred
+        },
+        {
+            url: 'turn:global.turn.twilio.com:3478?transport=tcp',
+            username: twilioObj.username,
+            urls: 'turn:global.turn.twilio.com:3478?transport=tcp',
+            credential: twilioObj.cred
+        },
+        {
+            url: 'turn:global.turn.twilio.com:443?transport=tcp',
+            username:twilioObj.username,
+            urls: 'turn:global.turn.twilio.com:443?transport=tcp',
+            credential: twilioObj.cred
+        }
+        ]} 
+    };
+}
 
 let socket = null, peer = null, peers = [], myStream = null, receivedCalls = [];  
+
 const Chat = ({ location })=> { 
 
     const [ name, setName ] = useState('');
@@ -37,20 +96,23 @@ const Chat = ({ location })=> {
 
     const [ join,setJoin ] = useState(0); 
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
-    
+     
+
     //const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_LOCAL;   // the express server 
-     const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_REAL; // my deployed server 
- 
+    const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_REAL; // my deployed server 
+    
     useEffect(() => {
         const { name, room } = queryString.parse(location.search); 
         socket = io(ENDPOINT, { transport : ['websocket'] });
-       
-        setName(name);
-        setRoom(room); 
+        setName(name.trim().toLowerCase()); 
+        setRoom(room.trim().toLowerCase());
+        // setName(name);
+        // setRoom(room); 
 
-        socket.emit('join',{name,room},()=>{
-            console.log(socket.id); 
-            //this function is called if server wants to reply with a message(eg:error) on this join event 
+        socket.emit('join',{name,room},(result)=>{
+            console.log(`You are ${name} with id ${socket.id}`); 
+            setCredObj(result); 
+            console.log(cred); 
         });
         
         return () => { //component unmounting 
@@ -66,14 +128,15 @@ const Chat = ({ location })=> {
             setMessages((messages)=>[...messages,messageReceived]); 
         });
         socket.on('usersinvoice-before-join',({users})=>{
-            console.log(users); 
+            //console.log(users); 
             setUsersInVoice((usersInVoice) => users); 
         });       
         socket.on('users-online',({users})=>{
-                setUsersOnline((usersOnline) => users); 
+            setUsersOnline((usersOnline) => users); 
         }); 
         socket.on('add-in-voice',(user)=>{
-            setUsersInVoice( usersInVoice =>[...usersInVoice,user]); 
+            console.log(`New user in voice: ${user.name}`); 
+            setUsersInVoice( usersInVoice =>[...usersInVoice,user]);     
         });
         socket.on('remove-from-voice',(user)=>{
             setUsersInVoice( usersInVoice =>usersInVoice.filter((x) => x.id !== user.id )); 
@@ -96,36 +159,9 @@ const Chat = ({ location })=> {
             .then((mystream)=>{
                 myStream = mystream; 
                 //peer = new Peer(socket.id);
-                const username = process.env.REACT_APP_TWILIO_USERNAME; 
-                const cred = {
-                    config : {
-                    'iceServers' : [
-                    {
-                        url: 'stun:global.stun.twilio.com:3478?transport=udp',
-                        urls: 'stun:global.stun.twilio.com:3478?transport=udp'
-                    },
-                    {
-                        url: 'turn:global.turn.twilio.com:3478?transport=udp',
-                        username,
-                        urls: 'turn:global.turn.twilio.com:3478?transport=udp',
-                        credential: process.env.REACT_APP_TWILIO_CREDENTIAL
-                    },
-                    {
-                        url: 'turn:global.turn.twilio.com:3478?transport=tcp',
-                        username,
-                        urls: 'turn:global.turn.twilio.com:3478?transport=tcp',
-                        credential: process.env.REACT_APP_TWILIO_CREDENTIAL
-                    },
-                    {
-                        url: 'turn:global.turn.twilio.com:443?transport=tcp',
-                        username,
-                        urls: 'turn:global.turn.twilio.com:443?transport=tcp',
-                        credential: process.env.REACT_APP_TWILIO_CREDENTIAL
-                    }
-                    ]} 
-                }
+
                 peer = new Peer(socket.id, cred);  
-                console.log(peer);
+                console.log("Peer:", peer);
                 
                 //listen 
                 peer.on('call', (call)=>{
@@ -138,21 +174,27 @@ const Chat = ({ location })=> {
                 });
                 //console.log(usersInVoice); 
                 peer.on('open',()=>{
-                    console.log("connected to peerserver"); 
-                    peers = (usersInVoice).map((u) => {  // usersInVoice affects this 
+                    console.log("connected to peerserver");
+
+                    // won't call myself 
+                    const otherUsersInVoice = (usersInVoice).filter((x) => x.id !== socket.id);  
+                    
+                    peers = (otherUsersInVoice).map((u) => {  // usersInVoice affects this 
                         //call everyone already present 
                         var mediaConnection = peer.call(u.id, mystream); 
-                        console.log(`Calling ${u.id}`);
+                        console.log(`Calling ${u.id} ${u.name}`);
                         //console.log(mediaConnection); 
     
                         const audio = document.createElement('audio');
                         mediaConnection.on('stream', (stream)=>{
+                            console.log(`${u.name} picked up call`)
                             audio.srcObject = stream
                             audio.addEventListener('loadedmetadata', () => {
                                 audio.play()
                             })
                         });
-                        // if anyone closes meadia connection 
+
+                        // if anyone closes media connection 
                         mediaConnection.on('close',()=>{
                             audio.remove();
                         })
@@ -164,15 +206,16 @@ const Chat = ({ location })=> {
             .catch((error)=>{
                 console.log("Error while getting audio",error); 
             })
-        } else {
-            
+        } 
+        
+        return ()=> {
+
             //close my audio 
             if(myStream) stopBothVideoAndAudio(myStream); 
             //close the calls i received
             receivedCalls.forEach((stream) => stopBothVideoAndAudio(stream));
             
-            
-            if(peer) { 
+            if(peer) {  
                 peer.disconnect();
                 myStream = null; 
                 console.log("disconnected"); 
@@ -186,6 +229,7 @@ const Chat = ({ location })=> {
                 }
             }
         }
+
     },[join]); 
     
 
@@ -208,21 +252,21 @@ const Chat = ({ location })=> {
     
      
     return (
-        <div className="outerContainer">
-            <div className="container">
+        <div className="outerContainer bgprime">
+            <div className="container bgsec">
                 <InfoBar room={room}/> 
                 <Messages messages={messages} name={name}/>
                 <Input setMessage={setMessage} sendMessage={sendMessage} messageToSend={messageToSend} /> 
             </div>
-            <div className="inMobile">
+            <div className="inMobile bgsec">
                     ...scoll down for more
             </div>
             <div className="container-right">
-                <div className="container-up">
+                <div className="container-up bgsec">
                     <InfoBarRight/> 
                     <People usersOnline={usersOnline} isVoice={false}/> 
                 </div>
-                <div className="container-down">  
+                <div className="container-down bgsec">  
                     <People usersOnline={usersInVoice} isVoice={true}/> 
                     <Voice usersInVoice={usersInVoice} joinVoice={joinVoice} leaveVoice={leaveVoice} join={join} setJoin={setJoin}/> 
                 </div>

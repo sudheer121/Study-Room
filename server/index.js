@@ -1,7 +1,36 @@
+require('dotenv').config()
+
 const express = require("express");   
 const socketio = require("socket.io"); 
 const http = require("http");
 const { ExpressPeerServer } = require('peer');
+
+
+const twilioObj = {
+    username : null,
+    cred : null 
+}
+
+// Comment if not required => below code is used to change creadentials for TURN server 
+//======================================================================================
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+client.tokens.create().then(token => {
+    twilioObj.username = token.username;
+    twilioObj.cred = token.password; 
+});
+const schedule = require('node-schedule');
+let rule = new schedule.RecurrenceRule();
+rule.hour = 12;
+schedule.scheduleJob(rule,()=>{
+    console.log("running"); 
+    const client = require('twilio')(process.env.accountSid, process.env.authToken);
+    client.tokens.create().then(token => {
+        twilioObj.username = token.username;
+        twilioObj.cred = token.password; 
+    });
+})
+//========================================================================
+
 
 const cors = require('cors');
 const app = express(); 
@@ -36,7 +65,8 @@ io.on('connection', socket => {
         socket.broadcast.to(user.room).emit('message',{user:'admin', text:`${user.name} has joined the room`}); //sends message to all users in room except this user
         io.to(user.room).emit('users-online', { room: user.room, users: getUsersInRoom(user.room) });
         //console.log(getUsersInRoom(user.room)); 
-        callBack(); // passing no errors to frontend for now 
+        callBack(twilioObj); // passing no errors to frontend for now 
+        //callBack(); 
     }); 
 
     
@@ -53,6 +83,7 @@ io.on('connection', socket => {
         callBack(); 
     }); 
     socket.on('leave-voice',({name,room},callBack)=>{
+
         io.to(room).emit('remove-from-voice',{id:socket.id,name:name}); 
         removeUserInVoice(socket.id); 
         callBack(); 
@@ -72,6 +103,9 @@ io.on('connection', socket => {
     
 
 });
+
+
+
 
 const PORT = process.env.PORT || 5000; 
 server.listen(PORT, ()=>{

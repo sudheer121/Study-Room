@@ -18,21 +18,41 @@ html, body {
   text-align: center;
   height: 100vh;
   align-items: center;
-  background-color: #1A1A1D;
 }
+
 
 .chatHeading { 
   color: #7289DA;
 }
 
 .joinInnerContainer {
-  width: 30%;
+  width: 40%;
+  padding : 5% 5%; 
+  border-radius: 10px;
+}
+
+.bookIcon {
+  height: 30px;
+  position: absolute; 
+  animation: shakeit 3s infinite;
+  animation-direction: alternate;
+}
+
+@keyframes shakeit{
+  0% {
+    transform: translate(0px,-140px);    
+  }
+  100% {
+    transform: translate(0px, -170px);
+  }
 }
 
 .joinInput {
-  border-radius: 0;
+  border-radius:5px;
   padding: 15px 20px;
   width: 100%;
+  border-style: solid ;
+  border-color: black;
 }
 
 .heading {
@@ -45,8 +65,7 @@ html, body {
 .button {
     color: #fff !important;
     text-transform: uppercase;
-    text-decoration: none;
-    background: #7289DA;
+    font-weight: bold;
     padding: 20px;
     border-radius: 5px;
     display: inline-block;
@@ -58,6 +77,15 @@ html, body {
   margin-top: 20px;
 }
 
+.helpbutton {
+  color: grey; 
+}
+
+.helptext {
+  color: grey;
+  text-align: left;
+  margin:0; 
+}
 
 @media (min-width: 320px) and (max-width: 480px) {
   .joinOuterContainer {
@@ -67,8 +95,6 @@ html, body {
   .joinInnerContainer {
     width: 90%;
   }
-
-
 }
 
 button:focus {

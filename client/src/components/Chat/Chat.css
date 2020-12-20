@@ -3,14 +3,12 @@
   justify-content: space-around;
   align-items: center;
   height: 100vh;
-  background-color: #1A1A1D;
 }
 
 .container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #FFFFFF;
   border-radius: 8px;
   height: 80%;
   width: 45%;
@@ -19,13 +17,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #1A1A1D;
   border-radius: 8px;
   height: 80%;
   width: 35%;
 }
 .container-up {
-  background-color: #303033;
   border-radius: 4px;
   height: 48%;
   width: 100%;
@@ -34,7 +30,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #303033;
   border-radius: 4px;
   height: 48%;
   width: 100%;
@@ -45,7 +40,6 @@
   padding: 5px 10px; 
   margin-top: 10px; 
   width: 100vw; 
-  background-color: #303033;
   color:grey
 }
 
