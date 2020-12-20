@@ -1,4 +1,4 @@
-# Study-Room
+# Study-Room (connect with text and voice channels over webSockets and webRTC)
 A fully functional web application where students can join in room, and communicate in text and audio channels.
 Check it out at https://mystudyroom.netlify.app  
 
