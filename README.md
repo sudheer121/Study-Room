@@ -7,7 +7,7 @@ Check it out at https://mystudyroom.netlify.app
 
 <div align="center"> 
   <div>
-    The application is compatible with both desktop and mobile phones. 
+    > The application is compatible with both desktop and mobile phones. 
   </div> 
   <div>
     <img src="https://i.imgur.com/x75zSa3.gif" width="600" height="300"/>
