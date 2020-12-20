@@ -2,8 +2,10 @@
 A fully functional web application where students can join in room, and communicate in text and audio channels.  
 
 <h3> Desktop and Mobile Views </h3>
-  > The application is compatible with both desktop and mobile phones. 
 <div align="center"> 
+  <div>
+    The application is compatible with both desktop and mobile phones. 
+  </div> 
   <div>
     <img src="https://i.imgur.com/x75zSa3.gif" width="600" height="300"/>
     <img src="/zgifs/mobile-view.gif" width="100" height="200"/>
