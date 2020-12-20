@@ -1,5 +1,6 @@
 # Study-Room
-A fully functional web application where students can join in room, and communicate in text and audio channels.  
+A fully functional web application where students can join in room, and communicate in text and audio channels.
+Check it out at https://mystudyroom.netlify.app  
 
 <h3> <u>Desktop and Mobile Views</u> </h3>
 
@@ -22,3 +23,12 @@ A fully functional web application where students can join in room, and communic
 > <li> Connect with multiple people by choosing unique room ids</li> 
 > </ul>
   
+<h3> Technologies Used </h3>
+
+> <ul> 
+> <li> Frontend - Nodejs </li>
+> <li> Backend - Reactjs </li>
+> <li> Chat - WebSockets </li>
+> <li> Voice - WebRTC </li> 
+> </ul>
+
