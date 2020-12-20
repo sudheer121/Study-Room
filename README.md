@@ -3,7 +3,7 @@ A fully functional web application where students can join in room, and communic
 <div align="center"> 
   <div>
     <img src="https://i.imgur.com/x75zSa3.gif" width="600" height="300"/>
-    <img src="https://i.imgur.com/nBhiEME.gif" width="120" height="300"/>
+    <img src="https://i.imgur.com/nBhiEME.gif" width="100" height="200"/>
   </div> 
   
 </div>
