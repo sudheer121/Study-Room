@@ -12,8 +12,8 @@ Check it out at https://mystudyroom.netlify.app
     
   </div> 
   <div>
-    <img src="https://i.imgur.com/x75zSa3.gif" width="600" height="300"/>
-    <img src="/zgifs/mobile-view.gif" width="100" height="200"/>
+    <img src="https://i.imgur.com/x75zSa3.gif" width="800" height="400"/>
+    <img src="/zgifs/mobile-view.gif" width="200" height="420"/>
   </div> 
 </div>
 
