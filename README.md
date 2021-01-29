@@ -18,7 +18,7 @@ Check it out at https://mystudyroom.netlify.app
 </div>
 
 <h3> Blog describing how the entire system works </h3>
-https://sudheer.hashnode.dev/how-mutimedia-streamig-apps-work
+https://sudheer.hashnode.dev/how-mutimedia-streaming-apps-work
 
 <h3> Features </h3>
 
