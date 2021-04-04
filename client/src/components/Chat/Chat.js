@@ -1,10 +1,12 @@
 import React, { useState,useEffect } from "react";
+import { useHistory } from "react-router-dom"; 
 import queryString from "query-string";
 import io from 'socket.io-client';
 import "./Chat.css";
 import InfoBar from "../InfoBar/InfoBar";
 import Input from "../Input/Input"; 
 import Messages from "../Messages/Messages";
+import { useAlert } from "react-alert";
 
 // Right side components
 import InfoBarRight from "../rightSideComponents/InfobarRight/InfoBarRight"
@@ -13,6 +15,7 @@ import Voice from "../rightSideComponents/Voice/Voice"
 
 import Peer from "peerjs"; 
 //import { cred } from "../../config/callcred"; 
+const axios = require("axios");
 
 const getAudio = () =>{
      return navigator.mediaDevices.getUserMedia({ audio: true, video: false })
@@ -96,8 +99,8 @@ const Chat = ({ location })=> {
 
     const [ join,setJoin ] = useState(0); 
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
-     
-
+    const history = useHistory();
+    const alert = useAlert();
     //const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_LOCAL;   // the express server 
     const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_REAL; // my deployed server 
     
@@ -106,21 +109,33 @@ const Chat = ({ location })=> {
         socket = io(ENDPOINT, { transport : ['websocket'] });
         setName(name.trim().toLowerCase()); 
         setRoom(room.trim().toLowerCase());
-        // setName(name);
-        // setRoom(room); 
-
-        socket.emit('join',{name,room},(result)=>{
-            console.log(`You are ${name} with id ${socket.id}`); 
-            setCredObj(result); 
-            //console.log(cred); 
-        });
+         
+        const connectNow = () => {
+            socket.emit('join',{name,room},(result)=>{
+                console.log(`You are ${name} with id ${socket.id}`); 
+                setCredObj(result); 
+                //console.log(cred); 
+            });
+        }
         
+        const checkRoomExists = async() =>{
+            let result = await axios.get(`${process.env.REACT_APP_API_ENDPOINT_REAL}/checkRoomExists/${room}`); 
+            if(result.data && result.data.exists){
+                connectNow(); 
+            } else {
+                alert.error("Such room doesn't exist or expired");
+                history.push("/");
+            }
+        }
+
+        checkRoomExists();
+
         return () => { //component unmounting 
             socket.emit('leave-voice',{name,room},() => {});
             socket.emit('disconnect');
             socket.off(); 
         }
-    },[ENDPOINT,location.search]); //[ENDPOINT,location.search]);  
+    },[ENDPOINT,location.search,history,alert]); //[ENDPOINT,location.search]);  
 
     
     useEffect(()=>{

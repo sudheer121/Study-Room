@@ -17,3 +17,7 @@
 .fontprime { 
     font-family: 'Merriweather', serif;
 }
+
+.fa:hover { 
+    color: wheat;
+}

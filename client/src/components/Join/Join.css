@@ -25,7 +25,14 @@ html, body {
   color: #7289DA;
 }
 
+.belowHeading {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
 .joinInnerContainer {
+  position: relative;
   width: 40%;
   padding : 5% 5%; 
   border-radius: 10px;
@@ -40,10 +47,10 @@ html, body {
 
 @keyframes shakeit{
   0% {
-    transform: translate(0px,-140px);    
+    transform: translate(-15px,20px);    
   }
   100% {
-    transform: translate(0px, -170px);
+    transform: translate(-15px, -20px);
   }
 }
 
@@ -53,6 +60,9 @@ html, body {
   width: 100%;
   border-style: solid ;
   border-color: black;
+  font-weight: bold;
+  letter-spacing: 2px;
+  font-size: 1.5rem;
 }
 
 .heading {
@@ -78,7 +88,8 @@ html, body {
 }
 
 .helpbutton {
-  color: grey; 
+  color: #7289DA; 
+  font-size: 2rem;
 }
 
 .helptext {
@@ -99,4 +110,8 @@ html, body {
 
 button:focus {
   outline: 0;
+}
+
+.bg-quat {
+  background-color: 6c6c6e;
 }
