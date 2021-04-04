@@ -31,7 +31,7 @@ const GenerateRoom = ({toggle}) => {
     },[state])
 
     const ShareCompnent = () => {
-        let myurl = `${process.env.REACT_APP_API_ENDPOINT_REAL}/join?roomId=${roomId}`
+        let myurl = `${process.env.REACT_APP_URL}/join?roomId=${roomId}`
         let title = "Join my study room"
         return(
         <> 
