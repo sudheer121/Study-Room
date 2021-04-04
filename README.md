@@ -3,6 +3,14 @@ Study, collaborate, conference ... over click of a button.
 A fully functional web application where students can join in room, and communicate in text and audio channels.The application connects peers using WebSockets and WebRTC. 
 Check it out at https://mystudyroom.netlify.app  
 
+<h3> New Features </h3>
+
+> <ul> 
+> <li> Generate room ID and share with friends </li>
+> <li> Directly connect to room with shared link, valid for 12 hours </li>
+> <li> Better UI </li>  
+> </ul>
+
 <h3> <u>Desktop and Mobile Views</u> </h3>
 
 <div align="center"> 
