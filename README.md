@@ -1,5 +1,17 @@
-<h2> Study-Room ( ....Chat, Talk, Study ) </h2>
-Study, collaborate, conference ... over click of a button. 
+
+---
+
+<img align="left" src="client/src/icons/readingBook.svg" width="100" height="100" />
+
+<div align="center" > 
+<h1><b> Study-Room  </b></h1>  
+<h3 align="right"><i> Chat, Talk, Study.... </i></h3>  
+<i> Study, collaborate, conference ... over click of a button. </i>
+</div> 
+
+
+---
+
 A fully functional web application where students can join in room, and communicate in text and audio channels.The application connects peers using WebSockets and WebRTC. 
 Check it out at https://mystudyroom.netlify.app  
 
