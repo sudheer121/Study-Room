@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import queryString from "query-string";
 import io from 'socket.io-client';
 import "./Chat.css";
+import { iceServerConfig } from "../../config/iceServers";
 import InfoBar from "../InfoBar/InfoBar";
 import Input from "../Input/Input"; 
 import Messages from "../Messages/Messages";
@@ -14,7 +15,6 @@ import People from "../rightSideComponents/People/People";
 import Voice from "../rightSideComponents/Voice/Voice"
 
 import Peer from "peerjs"; 
-//import { cred } from "../../config/callcred"; 
 const axios = require("axios");
 
 const getAudio = () =>{
@@ -28,66 +28,8 @@ function stopBothVideoAndAudio(stream) {
         }
     });
 }
-let cred = null; 
 
-// STUN/TURN servers for voice channel 
-const setCredObj = (twilioObj) => {
-    cred = {
-        config : {
-        'iceServers' : [
-        {
-            url: 'stun:global.stun.twilio.com:3478?transport=udp',
-            urls: 'stun:global.stun.twilio.com:3478?transport=udp'
-        },
-        {
-            url: 'turn:numb.viagenie.ca',
-            credential: 'muazkh',
-            username: 'webrtc@live.com'
-        },
-        {
-            url: 'turn:192.158.29.39:3478?transport=udp',
-            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-            username: '28224511:1379330808'
-        },
-        {
-            url: 'turn:192.158.29.39:3478?transport=tcp',
-            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-            username: '28224511:1379330808'
-        },
-        {
-            url: 'turn:turn.bistri.com:80',
-            credential: 'homeo',
-            username: 'homeo'
-        },
-        {
-            url: 'turn:turn.anyfirewall.com:443?transport=tcp',
-            credential: 'webrtc',
-            username: 'webrtc'
-        },  
-        //remove the below three objects if you are running locally without twilio 
-        {
-            url: 'turn:global.turn.twilio.com:3478?transport=udp',
-            username : twilioObj.username,
-            urls: 'turn:global.turn.twilio.com:3478?transport=udp',
-            credential: twilioObj.cred
-        },
-        {
-            url: 'turn:global.turn.twilio.com:3478?transport=tcp',
-            username: twilioObj.username,
-            urls: 'turn:global.turn.twilio.com:3478?transport=tcp',
-            credential: twilioObj.cred
-        },
-        {
-            url: 'turn:global.turn.twilio.com:443?transport=tcp',
-            username:twilioObj.username,
-            urls: 'turn:global.turn.twilio.com:443?transport=tcp',
-            credential: twilioObj.cred
-        }
-        ]} 
-    };
-}
-
-let socket = null, peer = null, peers = [], myStream = null, receivedCalls = [];  
+let cred = null, socket = null, peer = null, peers = [], myStream = null, receivedCalls = [];  
 
 const Chat = ({ location })=> { 
 
@@ -101,8 +43,9 @@ const Chat = ({ location })=> {
     const [ usersInVoice, setUsersInVoice ] = useState([]); 
     const history = useHistory();
     const alert = useAlert();
-    //const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_LOCAL;   // the express server 
-    const ENDPOINT = process.env.REACT_APP_API_ENDPOINT_REAL; // my deployed server 
+    
+    // Server websocket endpoint 
+    const ENDPOINT = process.env.REACT_APP_API_ENDPOINT;   
     
     useEffect(() => {
         const { name, room } = queryString.parse(location.search); 
@@ -113,13 +56,13 @@ const Chat = ({ location })=> {
         const connectNow = () => {
             socket.emit('join',{name,room},(result)=>{
                 console.log(`You are ${name} with id ${socket.id}`); 
-                setCredObj(result); 
-                //console.log(cred); 
+                cred = iceServerConfig(result); 
+                console.log("CRED SET", cred)
             });
         }
         
         const checkRoomExists = async() =>{
-            let result = await axios.get(`${process.env.REACT_APP_API_ENDPOINT_REAL}/checkRoomExists/${room}`); 
+            let result = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/checkRoomExists/${room}`); 
             if(result.data && result.data.exists){
                 connectNow(); 
             } else {
