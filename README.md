@@ -77,31 +77,18 @@ But WebSockets are still not peer to peer, in case of audio/video streaming betw
   ```bash 
   cd client 
   npm i 
+  npm start
   ```
 
   ```bash
   cd server 
+  cp .env.example .env
   npm i 
-  ```
-  Change the name of .env.example file from each client and server folders to .env
-
-  The server uses a Twilio API (for TURN servers) for voice chat, if you don't want to use it then comment the part of code from server, it's instructed in server code. 
-
-  Go to server folder and start the server
-
-  ```bash
-  cd server 
-  node index.js
-  ```
-
-  Go to client folder and start the React server 
-
-  ```bash 
-  cd client 
   npm start
   ```
   You are good to go !!!! . 
-
+  
+  `Note : The server uses a Twilio API (for TURN servers) for voice chat. Not required locally`
 <hr> 
 
 <h3> Pull Request </h3> 
