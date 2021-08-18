@@ -12,8 +12,7 @@ const twilioObj = {
     cred : null 
 }
 
-// Comment if not required => below code is used to change creadentials for TURN server remove this code if you don't understand 
-//======================================================================================
+// Voice chat uses turn server, not required locally 
 if(process.env.USE_TWILIO==="yes") { 
     const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
     client.tokens.create().then(token => {
@@ -32,8 +31,6 @@ if(process.env.USE_TWILIO==="yes") {
         controlRooms.deQRoom();
     })
 }
-//========================================================================
-
 
 const cors = require('cors');
 const app = express(); 
@@ -104,7 +101,6 @@ io.on('connection', socket => {
             removeUserInVoice(user.id); 
             socket.broadcast.to(user.room).emit('remove-from-voice',{id:socket.id,name:user.name}); 
         }
-        //console.log("User left"); 
     });
     
 
