@@ -67,7 +67,7 @@ const Join = ({location}) => {
         </button>
       </Link>
       <div style={{textAlign:"left", fontSize:"2rem"}} className="mt-20"> 
-        <span onClick={() => { toggle(2) }} style={{ marginRight:0, color:"#7289dA"}}> <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> </span>
+        <span onClick={() => { toggle(2) }} style={{ marginRight:0, color:"#7289dA"}}> <i className="fa fa-arrow-circle-left" aria-hidden="true"></i> </span>
       </div>
   </div>)
   }
@@ -82,7 +82,7 @@ const Join = ({location}) => {
           Join existing Room 
         </button>
         <p className="helpbutton" onClick={ () => { toggle(1) } }>
-          <i class="fa fa-question-circle" aria-hidden="true"></i>
+          <i className="fa fa-question-circle" aria-hidden="true"></i>
         </p>
       </>
     )
@@ -105,7 +105,7 @@ const Join = ({location}) => {
         that collaboration with friends while studying becomes easy. 
       </p>
       <div style={ {display:"flex", justifyContent:"space-between", fontSize:"2rem"}}> 
-        <span onClick={() => { toggle(2) }} style={{ marginRight:0, color:"#7289dA"}}> <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> </span>
+        <span onClick={() => { toggle(2) }} style={{ marginRight:0, color:"#7289dA"}}> <i className="fa fa-arrow-circle-left" aria-hidden="true"></i> </span>
         <a style={{ color:"grey",fontSize:"1.5rem" }} target="blank" href="https://www.linkedin.com/in/sudheer-tripathi-384239147/"> Meet me </a>
       </div>
     </div>)

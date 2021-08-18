@@ -20,7 +20,7 @@ const GenerateRoom = ({toggle}) => {
 
     useEffect(()=>{
         const getRoomId = async () =>{ 
-            let result = await axios.get(`${process.env.REACT_APP_API_ENDPOINT_REAL}/generateRoomId`); 
+            let result = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/generateRoomId`); 
             setRoomId(result.data.roomId); 
             setState(2);
             return result; 
@@ -97,7 +97,7 @@ const GenerateRoom = ({toggle}) => {
                 </div>
             </div>
             <div style={{textAlign:"left", fontSize:"2rem"}} className="mt-20"> 
-                <span onClick={() => { toggle(2) }} style={{ marginRight:0, color:"#7289dA"}}> <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> </span>
+                <span onClick={() => { toggle(2) }} style={{ marginRight:0, color:"#7289dA"}}> <i className="fa fa-arrow-circle-left" aria-hidden="true"></i> </span>
             </div>
         </div>
         </> 
