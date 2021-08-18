@@ -12,8 +12,8 @@
 
 ---
 
-A fully functional web application where students can join in room, and communicate in text and audio channels.The application connects peers using WebSockets and WebRTC. 
-Check it out at https://mystudyroom.netlify.app  
+A fully functional 🚀 web application where students create/join rooms and communicate using text and audio channels. No registration required . The application connects peers using WebSockets and WebRTC. 
+Check it out [here](https://mystudyroom.netlify.app).  
 
 <h3> New Features </h3>
 
@@ -31,7 +31,7 @@ Check it out at https://mystudyroom.netlify.app
   git clone https://github.com/Sudheer121/Study-Room.git 
   ```
 
-  Do npm install in both client and server folders
+  Start client and server in different terminals
 
   ```bash 
   cd client 
@@ -65,7 +65,9 @@ Check it out at https://mystudyroom.netlify.app
 </div>
 
 <h3> Blog describing how the entire system works </h3>
-https://sudheer.hashnode.dev/how-multimedia-streaming-apps-work
+
+- Checkout [the blog](https://sudheer.hashnode.dev/how-multimedia-streaming-apps-work).
+
 <h3> Features </h3>
 
 > <ul> 
