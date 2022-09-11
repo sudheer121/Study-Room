@@ -2,7 +2,7 @@ const randomstring = require("randomstring");
 const controlRooms = require("./controlRooms"); 
 
 const generateRoomId = () => {
-    let gen = randomstring.generate(8);  
+    let gen = randomstring.generate(10).toLowerCase();
     if(controlRooms.checkRoomExists(gen)){
         return generateRoomId(); 
     }
