@@ -2,3 +2,4 @@ node_modules
 httpssettings.txt
 config
 .env
+Procfile
